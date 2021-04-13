@@ -1,14 +1,13 @@
 package heap;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-public class HeapMaxArray {
+public class HeapMinArray {
     private int[] items;
     private int arraySize = 0; // The same as size() for ArrayList;
 
-    public HeapMaxArray(int arrayLength) {
+    public HeapMinArray(int arrayLength) {
         items = new int[arrayLength];
     }
 
@@ -18,7 +17,7 @@ public class HeapMaxArray {
             int p = (k - 1) / 2;
             int item = items[k];
             int parent = items[p];
-            if (item > parent) {
+            if (item < parent) {
                 items[k] = parent;
                 items[p] = item;
 
@@ -42,18 +41,18 @@ public class HeapMaxArray {
         int k = 0;
         int l = 2 * k + 1;
         while (l < arraySize) {
-            int max = l;
+            int min = l;
             int r = l + 1;
             if (r < arraySize) {
-                if (items[r] > items[l]) {
-                    max++;
+                if (items[r] < items[l]) {
+                    min++;
                 }
             }
-            if (items[k] < items[max]) {
+            if (items[k] > items[min]) {
                 int temp = items[k];
-                items[k] = items[max];
-                items[max] = temp;
-                k = max;
+                items[k] = items[min];
+                items[min] = temp;
+                k = min;
                 l = 2 * k + 1;
             } else {
                 break;
@@ -70,7 +69,7 @@ public class HeapMaxArray {
             int deletedItem = items[0];
             items[0] = 0;
             arraySize--;
-           return deletedItem;
+            return deletedItem;
         }
         int hold = items[0];
         items[0] = items[arraySize - 1];

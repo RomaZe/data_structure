@@ -8,62 +8,84 @@ public class HeapApp {
     public static void execHeapExamples() {
 
         // Generate data for Heap
-        Integer[] data = {33, 55, 44, 77, 88, 11, 22, 99, 1, 66};
+        Integer[] data = {33, 55, 44, 77, 2, 2, 22, 2, 1, 1, 66 , 2, 65,43, 2};
 //        Integer[] data = {};
 //        Integer[] data = {100};
 
-        Integer newElement = 111;
+        Integer newElement = 3;
 
 
         // Create Heap based on ArrayList<Integer>
         System.out.println("============ Max Heap based on ArrayList ==========================\n");
 
-        HeapMaxArrayList<Integer> hp = new HeapMaxArrayList<Integer>();
+        HeapMaxArrayList<Integer> heapMaxArrayList = new HeapMaxArrayList<Integer>();
 
         // Insert data
         for (Integer element : data) {
-            hp.insert(element);
+            heapMaxArrayList.insert(element);
         }
 
-        System.out.println("Heap: " + hp);
+        System.out.println("Heap: " + heapMaxArrayList);
         System.out.println();
 
-        Integer max = hp.delete();
-        System.out.println("Delete max element from Heap. Deleted element: " + max);
-        System.out.println("Heap: " + hp);
+        Integer maxElement = heapMaxArrayList.delete();
+        System.out.println("Deleted max element: " + maxElement);
+        System.out.println("Heap: " + heapMaxArrayList);
         System.out.println();
 
-        hp.insert(newElement);
+        heapMaxArrayList.insert(newElement);
         System.out.println("Add new element: " + newElement);
-        System.out.println("Heap: " + hp);
+        System.out.println("Heap: " + heapMaxArrayList);
         System.out.println();
 
 
-        // Create Heap based on Array
+        // Create Max Heap based on Array
         System.out.println("============ Max Heap based on Array =============================\n");
 
-        HeapMaxArray heapMin = new HeapMaxArray(15);
+        // Create Max Heap array object with special length
+        HeapMaxArray heapMaxArray = new HeapMaxArray(15);
 
-        for (int element : data) {
-            heapMin.insert(element);
-        }
-
-        System.out.println("Heap: " + heapMin);
+        // Insert data
+        for (int element : data) {heapMaxArray.insert(element);}
+        System.out.println("Heap: " + heapMaxArray);
         System.out.println();
 
-        int deletedHeapMin = heapMin.delete();
-        System.out.println("Delete max element from Heap. Deleted element: " + deletedHeapMin);
-        System.out.println("Heap: " + heapMin);
+        // Delete max elemnt
+        int maxHeapMaxElement = heapMaxArray.delete();
+        System.out.println("Deleted max element: " + maxHeapMaxElement);
+        System.out.println("Heap: " + heapMaxArray);
         System.out.println();
 
-
-        heapMin.insert(newElement);
-
+        // Add new element
+        heapMaxArray.insert(newElement);
         System.out.println("Add new element: " + newElement);
-        System.out.println("Heap: " + heapMin);
+        System.out.println("Heap: " + heapMaxArray);
         System.out.println();
 
-        // Output results
+
+        // Create Min Heap based on Array
+        System.out.println("============ Min Heap based on Array =============================\n");
+
+        // Create Min Heap array object with special length
+        HeapMinArray heapMinArray = new HeapMinArray(15);
+
+        // Insert data
+        for (int element : data) {heapMinArray.insert(element);}
+        System.out.println("Heap: " + heapMinArray);
+        System.out.println();
+
+        // Delete min element
+        int minHeapMinElement = heapMinArray.delete();
+        System.out.println("Deleted min element: " + minHeapMinElement);
+        System.out.println("Heap: " + heapMinArray);
+        System.out.println();
+
+        // Add new element
+        heapMinArray.insert(newElement);
+        System.out.println("Add new element: " + newElement);
+        System.out.println("Heap: " + heapMinArray);
+        System.out.println();
+
 
 
     }
