@@ -3,11 +3,11 @@ package heap;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-public class Heap<Integer extends Comparable<Integer>> {
+public class HeapMaxArrayList<Integer extends Comparable<Integer>> {
 
     private ArrayList<Integer> items;
 
-    public Heap() {
+    public HeapMaxArrayList() {
         items = new ArrayList<Integer>();
     }
 
