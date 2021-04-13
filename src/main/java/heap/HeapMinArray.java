@@ -45,7 +45,7 @@ public class HeapMinArray {
             int r = l + 1;
             if (r < arraySize) {
                 if (items[r] < items[l]) {
-                    min++;
+                    min = r;
                 }
             }
             if (items[k] > items[min]) {

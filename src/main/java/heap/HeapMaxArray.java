@@ -46,7 +46,7 @@ public class HeapMaxArray {
             int r = l + 1;
             if (r < arraySize) {
                 if (items[r] > items[l]) {
-                    max++;
+                    max = r;
                 }
             }
             if (items[k] < items[max]) {

@@ -3,11 +3,10 @@ package heap;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-public class HeapMaxArrayList<Integer extends Comparable<Integer>> {
-
+public class HeapMinArrayList<Integer extends Comparable<Integer>> {
     private ArrayList<Integer> items;
 
-    public HeapMaxArrayList() {
+    public HeapMinArrayList() {
         items = new ArrayList<Integer>();
     }
 
@@ -17,7 +16,7 @@ public class HeapMaxArrayList<Integer extends Comparable<Integer>> {
             int p = (k - 1) / 2;
             Integer item = items.get(k);
             Integer parent = items.get(p);
-            if (item.compareTo(parent) > 0) {
+            if (item.compareTo(parent) < 0) {
                 items.set(k, parent);
                 items.set(p, item);
 
@@ -36,18 +35,18 @@ public class HeapMaxArrayList<Integer extends Comparable<Integer>> {
         int k = 0;
         int l = 2 * k + 1;
         while (l < items.size()) {
-            int max = l;
+            int min = l;
             int r = l + 1;
             if (r < items.size()) {
-                if (items.get(r).compareTo(items.get(l)) > 0) {
-                    max = r;
+                if (items.get(r).compareTo(items.get(l)) < 0) {
+                    min = r;
                 }
             }
-            if (items.get(k).compareTo(items.get(max)) < 0) {
+            if (items.get(k).compareTo(items.get(min)) > 0) {
                 Integer temp = items.get(k);
-                items.set(k, items.get(max));
-                items.set(max, temp);
-                k = max;
+                items.set(k, items.get(min));
+                items.set(min, temp);
+                k = min;
                 l = 2 * k + 1;
             } else {
                 break;
@@ -66,14 +65,6 @@ public class HeapMaxArrayList<Integer extends Comparable<Integer>> {
         items.set(0, items.remove(items.size() - 1));
         shiftDown();
         return hold;
-    }
-
-    public int size() {
-        return items.size();
-    }
-
-    public boolean isEmpty() {
-        return items.isEmpty();
     }
 
     public String toString() {
