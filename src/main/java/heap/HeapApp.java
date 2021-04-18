@@ -119,11 +119,11 @@ public class HeapApp {
     public static void execHeapExampleTread() throws InterruptedException {
 
         class Producer implements Runnable {
+            HeapMaxArray heap;
             Thread worker;
-            HeapQueue queue;
 
-            public Producer(HeapQueue queue) {
-                this.queue = queue;
+            public Producer(HeapMaxArray heap) {
+                this.heap = heap;
                 worker = new Thread(this, "Producer");
                 System.out.println("Create thread for Producer");
                 worker.start();
@@ -131,23 +131,26 @@ public class HeapApp {
 
             public void run() {
                 try {
-                    while (queue.runnable) {
-                        queue.put();
-//                        Thread.sleep(1000);
+                    while (true) {
+                        for (int i = 1; i <= 100000; i++) {
+                            heap.insert(i);
+                            Thread.sleep(100);
+                        }
                     }
-                } catch (InterruptedException e) {
-                    System.out.println("Put run error");
-                    e.printStackTrace();
+                } catch (ArrayIndexOutOfBoundsException | InterruptedException e) {
+                    worker.interrupt();
                 }
             }
         }
 
         class Consumer implements Runnable {
+            HeapMaxArray heap;
             Thread worker;
-            HeapQueue queue;
+            Producer producer;
 
-            public Consumer(HeapQueue queue) {
-                this.queue = queue;
+            public Consumer(HeapMaxArray heap, Producer producer) {
+                this.producer = producer;
+                this.heap = heap;
                 worker = new Thread(this, "Consumer");
                 System.out.println("Create thread for Consumer");
                 worker.start();
@@ -155,10 +158,14 @@ public class HeapApp {
 
             public void run() {
                 try {
-                    while (queue.runnable) {
+                    while (true) {
                         Thread.sleep(3000);
-                        queue.get();
 
+                        if (producer.worker.isAlive()) {
+                            int maxElement = heap.delete();
+                            System.out.println("Get Max element: " + maxElement);
+                        } else
+                            break;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -166,9 +173,10 @@ public class HeapApp {
             }
         }
 
-        HeapQueue queue = new HeapQueue(100000);
-        Producer producer = new Producer(queue);
-        Consumer consumer = new Consumer(queue);
+
+        HeapMaxArray heapMaxArray = new HeapMaxArray(300);
+        Producer producer = new Producer(heapMaxArray);
+        Consumer consumer = new Consumer(heapMaxArray, producer);
 
         producer.worker.join();
         consumer.worker.join();
