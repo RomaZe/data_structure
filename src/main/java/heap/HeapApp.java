@@ -131,7 +131,7 @@ public class HeapApp {
 
             public void run() {
                 try {
-                    while (queue.runnable) {
+                    while (!queue.readytoExit) {
                         queue.put();
                         Thread.sleep(1500);
                     }
@@ -154,7 +154,7 @@ public class HeapApp {
 
             public void run() {
                 try {
-                    while (queue.runnable) {
+                    while (!queue.readytoExit) {
                         queue.get();
                     }
                 } catch (InterruptedException e) {

@@ -5,8 +5,8 @@ import java.util.TreeMap;
 public class HeapQueue {
     HeapMaxArray heap;
     int maxHeapSize;
-    boolean insertData = false;
-    boolean runnable = true;
+    boolean readyToRead = false;
+    boolean readytoExit = false;
     static int count = 1;
 
     public HeapQueue(int maxHeapSize) {
@@ -15,7 +15,7 @@ public class HeapQueue {
     }
 
     synchronized void put() throws InterruptedException {
-        while (insertData)
+        while (readyToRead)
             wait();
 
         try {
@@ -28,23 +28,21 @@ public class HeapQueue {
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Cannot add more than " + maxHeapSize + " tuples into Heap Array.");
-            runnable = false;
+            readytoExit = true;
         }
 
-        insertData = true;
+        readyToRead = true;
         notify();
-
-
     }
 
     synchronized public void get() throws InterruptedException {
-        while (!insertData)
+        while (!readyToRead)
             wait();
 
-        if (runnable) {
+        if (!readytoExit) {
             int maxElement = heap.delete();
             System.out.println("Get Max element: " + maxElement);
-            insertData = false;
+            readyToRead = false;
             notify();
         }
     }
