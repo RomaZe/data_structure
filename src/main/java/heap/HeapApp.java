@@ -46,7 +46,9 @@ public class HeapApp {
         HeapMaxArray heapMaxArray = new HeapMaxArray(15);
 
         // Insert data
-        for (int element : data) {heapMaxArray.insert(element);}
+        for (int element : data) {
+            heapMaxArray.insert(element);
+        }
         System.out.println("Heap: " + heapMaxArray);
         System.out.println();
 
@@ -94,7 +96,9 @@ public class HeapApp {
         HeapMinArray heapMinArray = new HeapMinArray(15);
 
         // Insert data
-        for (int element : data) {heapMinArray.insert(element);}
+        for (int element : data) {
+            heapMinArray.insert(element);
+        }
         System.out.println("Heap: " + heapMinArray);
         System.out.println();
 
@@ -111,4 +115,66 @@ public class HeapApp {
         System.out.println();
 
     }
+
+    public static void execHeapExampleTread() throws InterruptedException {
+
+        class Producer implements Runnable {
+            Thread worker;
+            HeapQueue queue;
+
+            public Producer(HeapQueue queue) {
+                this.queue = queue;
+                worker = new Thread(this, "Producer");
+                System.out.println("Create thread for Producer");
+                worker.start();
+            }
+
+            public void run() {
+                try {
+                    while (queue.runnable) {
+                        queue.put();
+                        Thread.sleep(1000);
+                    }
+                } catch (InterruptedException e) {
+                    System.out.println("Put run error");
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        class Consumer implements Runnable {
+            Thread t;
+            HeapQueue queue;
+
+            public Consumer(HeapQueue queue) {
+                this.queue = queue;
+                t = new Thread(this, "Consumer");
+                System.out.println("Create thread for Consumer");
+                t.start();
+            }
+
+            public void run() {
+                try {
+                    while (queue.runnable) {
+                        queue.get();
+//                        Thread.sleep(3000);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        HeapQueue queue = new HeapQueue(300);
+        Producer producer = new Producer(queue);
+        Consumer consumer = new Consumer(queue);
+
+        producer.worker.join();
+        consumer.t.join();
+
+        System.out.println("Program finished!!!");
+
+    }
+
 }
+
