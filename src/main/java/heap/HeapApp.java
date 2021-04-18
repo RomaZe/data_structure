@@ -133,33 +133,31 @@ public class HeapApp {
                 try {
                     while (queue.runnable) {
                         queue.put();
-                        Thread.sleep(1000);
+                        Thread.sleep(1500);
                     }
                 } catch (InterruptedException e) {
-                    System.out.println("Put run error");
                     e.printStackTrace();
                 }
             }
         }
 
         class Consumer implements Runnable {
-            Thread t;
+            Thread worker;
             HeapQueue queue;
 
             public Consumer(HeapQueue queue) {
                 this.queue = queue;
-                t = new Thread(this, "Consumer");
+                worker = new Thread(this, "Consumer");
                 System.out.println("Create thread for Consumer");
-                t.start();
+                worker.start();
             }
 
             public void run() {
                 try {
                     while (queue.runnable) {
                         queue.get();
-//                        Thread.sleep(3000);
                     }
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -170,7 +168,7 @@ public class HeapApp {
         Consumer consumer = new Consumer(queue);
 
         producer.worker.join();
-        consumer.t.join();
+        consumer.worker.join();
 
         System.out.println("Program finished!!!");
 

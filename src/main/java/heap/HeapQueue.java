@@ -17,6 +17,7 @@ public class HeapQueue {
     synchronized void put() throws InterruptedException {
         while (insertData)
             wait();
+
         try {
             for (int i = 1; i <= 30; i++) {
                 heap.insert(count);
