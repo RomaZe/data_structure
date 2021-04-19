@@ -1,8 +1,5 @@
 package heap;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-
 public class HeapApp {
 
     public static void execHeapExamples() {
@@ -131,7 +128,7 @@ public class HeapApp {
 
             public void run() {
                 try {
-                    while (!queue.readytoExit) {
+                    while (!queue.readyToExit) {
                         queue.put();
                         Thread.sleep(1500);
                     }
@@ -154,7 +151,7 @@ public class HeapApp {
 
             public void run() {
                 try {
-                    while (!queue.readytoExit) {
+                    while (!queue.readyToExit) {
                         queue.get();
                     }
                 } catch (InterruptedException e) {

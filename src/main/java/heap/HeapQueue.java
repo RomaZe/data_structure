@@ -1,12 +1,10 @@
 package heap;
 
-import java.util.TreeMap;
-
 public class HeapQueue {
     HeapMaxArray heap;
     int maxHeapSize;
     boolean readyToRead = false;
-    boolean readytoExit = false;
+    boolean readyToExit = false;
     static int count = 1;
 
     public HeapQueue(int maxHeapSize) {
@@ -28,7 +26,7 @@ public class HeapQueue {
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Cannot add more than " + maxHeapSize + " tuples into Heap Array.");
-            readytoExit = true;
+            readyToExit = true;
         }
 
         readyToRead = true;
@@ -39,7 +37,7 @@ public class HeapQueue {
         while (!readyToRead)
             wait();
 
-        if (!readytoExit) {
+        if (!readyToExit) {
             int maxElement = heap.delete();
             System.out.println("Get Max element: " + maxElement);
             readyToRead = false;
