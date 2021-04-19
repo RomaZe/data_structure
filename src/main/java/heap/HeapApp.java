@@ -171,5 +171,62 @@ public class HeapApp {
 
     }
 
+    public static void execHeapExampleThreadAtomic() throws InterruptedException {
+        class Producer implements Runnable {
+            Thread worker;
+            HeapQueueAtomic queue;
+
+            public Producer(HeapQueueAtomic queue) {
+                this.queue = queue;
+                worker = new Thread(this, "Producer");
+                System.out.println("Create thread for Producer");
+                worker.start();
+            }
+
+            public void run() {
+                try {
+                    while (!queue.readyToExit) {
+                        queue.put();
+//                        Thread.sleep(100);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        class Consumer implements Runnable {
+            Thread worker;
+            HeapQueueAtomic queue;
+
+            public Consumer(HeapQueueAtomic queue) {
+                this.queue = queue;
+                worker = new Thread(this, "Consumer");
+                System.out.println("Create thread for Consumer");
+                worker.start();
+            }
+
+            public void run() {
+                try {
+                    while (!queue.readyToExit) {
+                        queue.get();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        HeapQueueAtomic queue = new HeapQueueAtomic(300);
+        Producer producer = new Producer(queue);
+        Consumer consumer = new Consumer(queue);
+
+        producer.worker.join();
+        consumer.worker.join();
+
+        System.out.println("Program finished!!!");
+
+    }
+
 }
 

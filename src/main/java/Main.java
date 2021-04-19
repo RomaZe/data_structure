@@ -7,9 +7,15 @@ public class Main {
 //        // Run Heap data structure examples
 //        HeapApp.execHeapExamples();
 
-        // Run Heap data structure examples with Thread
+//        // Run Heap data structure examples with Thread
+//        try {
+//            HeapApp.execHeapExampleTread();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
         try {
-            HeapApp.execHeapExampleTread();
+            HeapApp.execHeapExampleThreadAtomic();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
