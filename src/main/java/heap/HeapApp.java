@@ -1,6 +1,10 @@
 package heap;
 
+import java.util.NoSuchElementException;
+
 public class HeapApp {
+
+
 
     public static void execHeapExamples() {
 
@@ -128,9 +132,21 @@ public class HeapApp {
 
             public void run() {
                 try {
+//                    Thread.sleep(3000);
                     while (!queue.readyToExit) {
-                        queue.put();
-//                        Thread.sleep(1000);
+
+//                        if (queue.mutex) {
+//                            queue.mutex = false;
+//                            queue.put();
+//                            queue.mutex = true;
+//                        }
+
+                        if (queue.mutexAtomic.getAndSet(false)) {
+                            queue.put();
+                            queue.mutexAtomic.getAndSet(true);
+                        }
+
+                       Thread.sleep(1000);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -152,8 +168,17 @@ public class HeapApp {
             public void run() {
                 try {
                     while (!queue.readyToExit) {
-                        queue.get();
-                        Thread.sleep(100);
+//                        if (queue.mutex) {
+//                            queue.mutex = false;
+//                            queue.get();
+//                            queue.mutex = true;
+//                        }
+                        if (queue.mutexAtomic.getAndSet(false)) {
+                            queue.get();
+                            queue.mutexAtomic.getAndSet(true);
+                        }
+
+                        Thread.sleep(300);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -161,13 +186,13 @@ public class HeapApp {
             }
         }
 
-        HeapQueue queue = new HeapQueue(300);
+        HeapQueue queue = new HeapQueue(100000);
 
-        for (int i = 1; i <=1 ; i++) {
+        for (int i = 1; i <= 300 ; i++) {
             new Producer(queue, "Producer_" + i);
         }
 
-        for (int i = 1; i <=2 ; i++) {
+        for (int i = 1; i <= 300 ; i++) {
             new Consumer(queue, "Consumer_" + i);
         }
 //

@@ -1,9 +1,13 @@
 package heap;
 
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class HeapQueue {
     HeapMaxArray heap;
     int maxHeapSize;
-    boolean readyToRead = false;
+    public boolean mutex = true;
+    AtomicBoolean mutexAtomic = new AtomicBoolean(true);
     boolean readyToExit = false;
     static int count = 1;
 
@@ -12,39 +16,49 @@ public class HeapQueue {
         heap = new HeapMaxArray(maxHeapSize);
     }
 
-    synchronized void put() throws InterruptedException {
-        while (readyToRead)
-//            System.out.println("Producer wait");
-            wait();
+    void put() throws InterruptedException {
+
+//        while (readyToRead)
+////            System.out.println("Producer wait");
+//            Thread.currentThread().wait();
 
         try {
-            for (int i = 1; i <= 30; i++) {
+            for (int i = 1; i <= 800; i++) {
                 heap.insert(count);
                 count++;
             }
 
-            System.out.println(Thread.currentThread().getName() + ": Put data:" + heap);
+//            System.out.println(Thread.currentThread().getName() + ": Put data:" + heap);
+            System.out.println(Thread.currentThread().getName() + ": Put data into Heap.");
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Cannot add more than " + maxHeapSize + " tuples into Heap Array.");
             readyToExit = true;
         }
 
-        readyToRead = true;
-        notify();
+//        readyToRead = true;
+//        notify();
     }
 
-    synchronized public void get() throws InterruptedException {
-        while (!readyToRead)
-//            System.out.println("Consumer wait");
-            wait();
+    public void get() throws InterruptedException {
+//        while (!readyToRead)
+////            System.out.println("Consumer wait");
+//            wait();
+        try {
+            if (!readyToExit) {
+                int maxElement = heap.delete();
+                System.out.println(Thread.currentThread().getName() + ": Get Max element: " + maxElement);
+//            readyToRead = false;
+                // notify();
+            } else {
+                System.out.println("Array is full. get do nothing.");
+            }
 
-        if (!readyToExit) {
-            int maxElement = heap.delete();
-            System.out.println(Thread.currentThread().getName() + ": Get Max element: " + maxElement);
-            readyToRead = false;
-            notify();
+        } catch (NoSuchElementException e) {
+            System.out.println("Cannot take max element from heap. Heap is empty.");
+//            readyToExit = true;
         }
+
     }
 
 }
