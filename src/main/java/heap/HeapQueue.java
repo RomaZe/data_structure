@@ -14,6 +14,7 @@ public class HeapQueue {
 
     synchronized void put() throws InterruptedException {
         while (readyToRead)
+//            System.out.println("Producer wait");
             wait();
 
         try {
@@ -22,7 +23,7 @@ public class HeapQueue {
                 count++;
             }
 
-            System.out.println("Put data:" + heap);
+            System.out.println(Thread.currentThread().getName() + ": Put data:" + heap);
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Cannot add more than " + maxHeapSize + " tuples into Heap Array.");
@@ -35,11 +36,12 @@ public class HeapQueue {
 
     synchronized public void get() throws InterruptedException {
         while (!readyToRead)
+//            System.out.println("Consumer wait");
             wait();
 
         if (!readyToExit) {
             int maxElement = heap.delete();
-            System.out.println("Get Max element: " + maxElement);
+            System.out.println(Thread.currentThread().getName() + ": Get Max element: " + maxElement);
             readyToRead = false;
             notify();
         }

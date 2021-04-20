@@ -119,10 +119,10 @@ public class HeapApp {
             Thread worker;
             HeapQueue queue;
 
-            public Producer(HeapQueue queue) {
+            public Producer(HeapQueue queue, String name) {
                 this.queue = queue;
-                worker = new Thread(this, "Producer");
-                System.out.println("Create thread for Producer");
+                worker = new Thread(this, name);
+                System.out.println("Create thread for " + name);
                 worker.start();
             }
 
@@ -130,7 +130,7 @@ public class HeapApp {
                 try {
                     while (!queue.readyToExit) {
                         queue.put();
-//                        Thread.sleep(1500);
+//                        Thread.sleep(1000);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -142,10 +142,10 @@ public class HeapApp {
             Thread worker;
             HeapQueue queue;
 
-            public Consumer(HeapQueue queue) {
+            public Consumer(HeapQueue queue, String name) {
                 this.queue = queue;
-                worker = new Thread(this, "Consumer");
-                System.out.println("Create thread for Consumer");
+                worker = new Thread(this, name);
+                System.out.println("Create thread for " + name);
                 worker.start();
             }
 
@@ -153,6 +153,7 @@ public class HeapApp {
                 try {
                     while (!queue.readyToExit) {
                         queue.get();
+                        Thread.sleep(100);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -161,13 +162,20 @@ public class HeapApp {
         }
 
         HeapQueue queue = new HeapQueue(300);
-        Producer producer = new Producer(queue);
-        Consumer consumer = new Consumer(queue);
 
-        producer.worker.join();
-        consumer.worker.join();
+        for (int i = 1; i <=1 ; i++) {
+            new Producer(queue, "Producer_" + i);
+        }
 
-        System.out.println("Program finished!!!");
+        for (int i = 1; i <=2 ; i++) {
+            new Consumer(queue, "Consumer_" + i);
+        }
+//
+//        producer.worker.join();
+//        consumer1.worker.join();
+//        consumer2.worker.join();
+
+//        System.out.println("Program finished!!!");
 
     }
 
