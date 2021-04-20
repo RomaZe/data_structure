@@ -9,7 +9,7 @@ public class Main {
 
 //        // Run Heap data structure examples with Thread
 //        try {
-//            HeapApp.execHeapExampleTread();
+//            HeapApp.execHeapExampleThread();
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
