@@ -42,7 +42,7 @@ public class HeapQueue {
 
         } catch (NoSuchElementException e) {
             System.out.println("Cannot take max element from heap. Heap is empty.");
-//            readyToExit = true;
+
         }
 
     }
