@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HeapQueue {
     HeapMaxArray heap;
     int maxHeapSize;
-    public boolean mutex = true;
     AtomicBoolean mutexAtomic = new AtomicBoolean(true);
     boolean readyToExit = false;
     static int count = 1;
@@ -17,39 +16,26 @@ public class HeapQueue {
     }
 
     void put() throws InterruptedException {
-
-//        while (readyToRead)
-////            System.out.println("Producer wait");
-//            Thread.currentThread().wait();
-
         try {
-            for (int i = 1; i <= 800; i++) {
+            for (int i = 1; i <= 10; i++) {
                 heap.insert(count);
                 count++;
             }
 
-//            System.out.println(Thread.currentThread().getName() + ": Put data:" + heap);
-            System.out.println(Thread.currentThread().getName() + ": Put data into Heap.");
+            System.out.println(Thread.currentThread().getName() + ": Put data:" + heap);
+//            System.out.println(Thread.currentThread().getName() + ": Put data into Heap.");
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Cannot add more than " + maxHeapSize + " tuples into Heap Array.");
             readyToExit = true;
         }
-
-//        readyToRead = true;
-//        notify();
     }
 
     public void get() throws InterruptedException {
-//        while (!readyToRead)
-////            System.out.println("Consumer wait");
-//            wait();
         try {
             if (!readyToExit) {
                 int maxElement = heap.delete();
                 System.out.println(Thread.currentThread().getName() + ": Get Max element: " + maxElement);
-//            readyToRead = false;
-                // notify();
             } else {
                 System.out.println("Array is full. get do nothing.");
             }

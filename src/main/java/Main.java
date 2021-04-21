@@ -14,10 +14,5 @@ public class Main {
             e.printStackTrace();
         }
 
-//        try {
-//            HeapApp.execHeapExampleThreadAtomic();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
     }
 }
