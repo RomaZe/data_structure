@@ -5,7 +5,6 @@ import java.util.NoSuchElementException;
 public class HeapApp {
 
 
-
     public static void execHeapExamples() {
 
         // Generate data for Heap
@@ -119,77 +118,104 @@ public class HeapApp {
 
     public static void execHeapExampleThread() throws InterruptedException {
 
-        class Producer implements Runnable {
-            Thread worker;
-            public HeapQueue queue;
-
-            public Producer(HeapQueue queue, String name) {
-                this.queue = queue;
-                worker = new Thread(this, name);
-                System.out.println("Create thread for " + name);
-                worker.start();
-            }
-
-            public void run() {
-                try {
-//                    Thread.sleep(3000);
-                    while (!queue.readyToExit) {
-                        if (queue.mutexAtomic.getAndSet(false)) {
-                            queue.put();
-                            queue.mutexAtomic.getAndSet(true);
-                        }
-
-                       Thread.sleep(1000);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        class Consumer implements Runnable {
-            Thread worker;
-            HeapQueue queue;
-
-            public Consumer(HeapQueue queue, String name) {
-                this.queue = queue;
-                worker = new Thread(this, name);
-                System.out.println("Create thread for " + name);
-                worker.start();
-            }
-
-            public void run() {
-                try {
-                    while (!queue.readyToExit) {
-                        if (queue.mutexAtomic.getAndSet(false)) {
-                            queue.get();
-                            queue.mutexAtomic.getAndSet(true);
-                        }
-
-                        Thread.sleep(300);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        class Producer implements Runnable {
+//            Thread worker;
+//            public HeapQueue queue;
+//
+//            public Producer(HeapQueue queue, String name) {
+//                this.queue = queue;
+//                worker = new Thread(this, name);
+//                System.out.println("Create thread for " + name);
+//                worker.start();
+//            }
+//
+//            public void run() {
+//                try {
+////                    Thread.sleep(3000);
+//                    while (!queue.readyToExit) {
+//                        if (queue.mutexAtomic.getAndSet(false)) {
+//                            queue.put();
+//                            queue.mutexAtomic.getAndSet(true);
+//                        }
+//
+//                        Thread.sleep(1000);
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//
+//        class Consumer implements Runnable {
+//            Thread worker;
+//            HeapQueue queue;
+//
+//            public Consumer(HeapQueue queue, String name) {
+//                this.queue = queue;
+//                worker = new Thread(this, name);
+//                System.out.println("Create thread for " + name);
+//                worker.start();
+//            }
+//
+//            public void run() {
+//                try {
+//                    while (!queue.readyToExit) {
+//                        if (queue.mutexAtomic.getAndSet(false)) {
+//                            queue.get();
+//                            queue.mutexAtomic.getAndSet(true);
+//                        }
+//
+//                        Thread.sleep(300);
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
 
         HeapQueue queue = new HeapQueue(300);
 
-        for (int i = 1; i <= 2 ; i++) {
-            new Producer(queue, "Producer_" + i);
+        // Start Producer
+        for (int i = 0; i < 2; i++) {
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+//                    Thread.sleep(3000);
+                        while (!queue.readyToExit) {
+                            if (queue.mutexAtomic.getAndSet(false)) {
+                                queue.put();
+                                queue.mutexAtomic.getAndSet(true);
+                            }
+                            Thread.sleep(1000);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
         }
 
-        for (int i = 1; i <= 2 ; i++) {
-            new Consumer(queue, "Consumer_" + i);
+        // Start Consumer
+        for (int i = 0; i < 2; i++) {
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        while (!queue.readyToExit) {
+                            if (queue.mutexAtomic.getAndSet(false)) {
+                                queue.get();
+                                queue.mutexAtomic.getAndSet(true);
+                            }
+
+                            Thread.sleep(300);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
         }
-//
-//        producer.worker.join();
-//        consumer1.worker.join();
-//        consumer2.worker.join();
-
-//        System.out.println("Program finished!!!");
-
     }
 
 }
