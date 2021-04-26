@@ -118,85 +118,85 @@ public class HeapApp {
 
     public static void execHeapExampleThread() throws InterruptedException {
 
-        class Producer implements Runnable {
-            Thread worker;
-            public HeapQueue queue;
-
-            public Producer(HeapQueue queue, String name) {
-                this.queue = queue;
-                worker = new Thread(this, name);
-                System.out.println("Create thread for " + name);
-                worker.start();
-
-                queue.dispetcher.takeAction(() -> {
-                    queue.dispetcher.producers.add(worker);
-                });
-            }
-
-            public void run() {
-                try {
-//                    Thread.sleep(3000);
-                    while (true) {
-                        if (!Thread.interrupted()) {
-                            if (queue.mutexAtomic.getAndSet(false)) {
-                                queue.put();
-                                queue.mutexAtomic.getAndSet(true);
-                            }
-
-                            Thread.sleep(1000);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    System.out.printf("Thread %s was interruped by someone calling this Thread.interrupt()", Thread.currentThread().getName());
-                    System.out.println();
-//                    e.printStackTrace();
-                }
-            }
-        }
+//        class Producer implements Runnable {
+//            Thread worker;
+//            public HeapQueue queue;
 //
-        class Consumer implements Runnable {
-            Thread worker;
-            HeapQueue queue;
-
-            public Consumer(HeapQueue queue, String name) {
-                this.queue = queue;
-                worker = new Thread(this, name);
+//            public Producer(HeapQueue queue, String name) {
+//                this.queue = queue;
+//                worker = new Thread(this, name);
 //                System.out.println("Create thread for " + name);
-                worker.start();
-
-                queue.dispetcher.takeAction(() -> {
-                    queue.dispetcher.consumers.add(worker);
-                });
-            }
-
-            public void run() {
-                try {
-                    while (true) {
-                        if (!Thread.interrupted()) {
-                            if (queue.mutexAtomic.getAndSet(false)) {
-                                queue.get();
-                                queue.mutexAtomic.getAndSet(true);
-                            }
-
-                            Thread.sleep(300);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    System.out.println("All consumers have been stopped because no any Producers");
-                }
-            }
-
-       }
+//                worker.start();
+//
+//                queue.dispetcher.takeAction(() -> {
+//                    queue.dispetcher.producers.add(worker);
+//                });
+//            }
+//
+//            public void run() {
+//                try {
+////                    Thread.sleep(3000);
+//                    while (true) {
+//                        if (!Thread.interrupted()) {
+//                            if (queue.mutexAtomic.getAndSet(false)) {
+//                                queue.put();
+//                                queue.mutexAtomic.getAndSet(true);
+//                            }
+//
+//                            Thread.sleep(1000);
+//                        }
+//                    }
+//                } catch (InterruptedException e) {
+//                    System.out.printf("Thread %s was interruped by someone calling this Thread.interrupt()", Thread.currentThread().getName());
+//                    System.out.println();
+////                    e.printStackTrace();
+//                }
+//            }
+//        }
+//
+//        class Consumer implements Runnable {
+//            Thread worker;
+//            HeapQueue queue;
+//
+//            public Consumer(HeapQueue queue, String name) {
+//                this.queue = queue;
+//                worker = new Thread(this, name);
+////                System.out.println("Create thread for " + name);
+//                worker.start();
+//
+//                queue.dispetcher.takeAction(() -> {
+//                    queue.dispetcher.consumers.add(worker);
+//                });
+//            }
+//
+//            public void run() {
+//                try {
+//                    while (true) {
+//                        if (!Thread.interrupted()) {
+//                            if (queue.mutexAtomic.getAndSet(false)) {
+//                                queue.get();
+//                                queue.mutexAtomic.getAndSet(true);
+//                            }
+//
+//                            Thread.sleep(300);
+//                        }
+//                    }
+//                } catch (InterruptedException e) {
+//                    System.out.println("All consumers have been stopped because no any Producers");
+//                }
+//            }
+//
+//        }
 
         HeapQueue queue = new HeapQueue(100);
 
-        for (int i = 0; i < 3; i++) {
-            new Producer(queue, "Producer_" + i);
-        }
-
-        for (int i = 0; i < 1; i++) {
-            new Consumer(queue, "Consumer_" + i);
-        }
+//        for (int i = 0; i < 3; i++) {
+//            new Producer(queue, "Producer_" + i);
+//        }
+//
+//        for (int i = 0; i < 1; i++) {
+//            new Consumer(queue, "Consumer_" + i);
+//        }
 
 //        // Start Producer
 //        for (int i = 0; i < 2; i++) {
@@ -240,22 +240,49 @@ public class HeapApp {
 //            }.start();
 //        }
 //
-//        // Try to write Producer with lambda function
-//        new Thread(() -> {
-//            try {
-////                    Thread.sleep(3000);
-//                while (!queue.readyToExit) {
-//                    if (queue.mutexAtomic.getAndSet(false)) {
-//                        queue.put();
-//                        queue.mutexAtomic.getAndSet(true);
-//                    }
-//                    Thread.sleep(1000);
-//                }
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }).start();
-    }
+        // Producer with lambda function
+        for (int i = 0; i < 5; i++) {
+            new Thread(() -> {
+                queue.dispetcher.addProducer( () -> queue.dispetcher.producers.add(Thread.currentThread()) );
+                try {
+//              Thread.sleep(3000);
+                    while (true) {
+                        if (!Thread.interrupted()) {
+                            if (queue.mutexAtomic.getAndSet(false)) {
+                                queue.put();
+                                queue.mutexAtomic.getAndSet(true);
+                            }
+                            Thread.sleep(1000);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    System.out.printf("Producer %s was interrupted by someone calling Thread.interrupt()", Thread.currentThread().getName());
+                    System.out.println();
+                }
+            }).start();
+        }
 
+        // Consumer with lambda function
+        for (int i = 0; i < 3; i++) {
+            new Thread(() -> {
+                queue.dispetcher.addConsumer( () -> queue.dispetcher.consumers.add(Thread.currentThread()) );
+                try {
+                    while (true) {
+                        if (!Thread.interrupted()) {
+                            if (queue.mutexAtomic.getAndSet(false)) {
+                                queue.get();
+                                queue.mutexAtomic.getAndSet(true);
+                            }
+
+                            Thread.sleep(300);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    System.out.printf("Consumer %s was interrupted by someone calling Thread.interrupt() because no any Producers.", Thread.currentThread().getName());
+                    System.out.println();
+                }
+            }).start();
+        }
+    }
 }
 

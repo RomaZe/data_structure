@@ -30,18 +30,19 @@ public class HeapQueue {
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Cannot add more than " + maxHeapSize + " tuples into Heap Array.");
 
-            dispetcher.takeAction(() -> {
+            dispetcher.removeProducer(() -> {
                 dispetcher.producers.remove(Thread.currentThread());
                 Thread.currentThread().interrupt();
             });
 
-            dispetcher.takeAction(() -> {
+            dispetcher.removeConsumer(() -> {
                 if (dispetcher.producers.size() == 0) {
                     for (Thread consumer : dispetcher.consumers) {
                         consumer.interrupt();
                     }
                 }
             });
+
         }
     }
 
