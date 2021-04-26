@@ -1,5 +1,7 @@
 package heap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -7,8 +9,8 @@ public class HeapQueue {
     HeapMaxArray heap;
     int maxHeapSize;
     AtomicBoolean mutexAtomic = new AtomicBoolean(true);
-    boolean readyToExit = false;
     static int count = 1;
+    public Dispetcher dispetcher = new Dispetcher();
 
     public HeapQueue(int maxHeapSize) {
         this.maxHeapSize = maxHeapSize;
@@ -27,24 +29,22 @@ public class HeapQueue {
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Cannot add more than " + maxHeapSize + " tuples into Heap Array.");
-            readyToExit = true;
+            dispetcher.removeProducer(Thread.currentThread());
+            dispetcher.notifyConsumers();
+//            System.out.println("Remove Producer: " + Thread.currentThread().getName());
         }
     }
 
     public void get() throws InterruptedException {
         try {
-            if (!readyToExit) {
-                int maxElement = heap.delete();
-                System.out.println(Thread.currentThread().getName() + ": Get Max element: " + maxElement);
-            } else {
-                System.out.println("Array is full. get do nothing.");
-            }
-
+            int maxElement = heap.delete();
+            System.out.println(Thread.currentThread().getName() + ": Get Max element: " + maxElement);
         } catch (NoSuchElementException e) {
             System.out.println("Cannot take max element from heap. Heap is empty.");
 
         }
 
     }
+
 
 }
