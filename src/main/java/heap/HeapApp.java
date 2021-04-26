@@ -127,7 +127,10 @@ public class HeapApp {
                 worker = new Thread(this, name);
                 System.out.println("Create thread for " + name);
                 worker.start();
-                queue.dispetcher.registerProducer(worker);
+
+                queue.dispetcher.takeAction(() -> {
+                    queue.dispetcher.producers.add(worker);
+                });
             }
 
             public void run() {
@@ -160,7 +163,10 @@ public class HeapApp {
                 worker = new Thread(this, name);
 //                System.out.println("Create thread for " + name);
                 worker.start();
-                queue.dispetcher.registerConsumer(worker);
+
+                queue.dispetcher.takeAction(() -> {
+                    queue.dispetcher.consumers.add(worker);
+                });
             }
 
             public void run() {
