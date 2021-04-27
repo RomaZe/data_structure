@@ -8,8 +8,9 @@ public class Main {
 //        HeapApp.execHeapExamples();
 
         // Run Heap data structure examples with Thread
+        HeapApp myApp = new HeapApp();
         try {
-            HeapApp.execHeapExampleThread();
+            myApp.execHeapExampleThread();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
