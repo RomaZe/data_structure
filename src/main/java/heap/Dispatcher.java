@@ -21,7 +21,6 @@ public class Dispatcher {
 
     synchronized public void addConsumer(Thread consumer) {
         consumers.add(consumer);
-//        System.out.println("Add Consumer");
     }
 
     synchronized public void notifyConsumer() {

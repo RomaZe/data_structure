@@ -10,10 +10,6 @@ public class HeapApp {
     private Dispatcher dispatcher = new Dispatcher();
     private HeapQueue queue = new HeapQueue(100);
 
-    public void setStopRequested(boolean stopRequested) {
-        HeapApp.stopRequested = stopRequested;
-    }
-
 
     public static void execHeapExamples() {
 
@@ -252,7 +248,6 @@ public class HeapApp {
         // Producer with lambda function
         for (int i = 0; i < 3; i++) {
             new Thread(() -> {
-//                dispatcher.addProducer( () -> dispatcher.producers.add(Thread.currentThread()) );
                 dispatcher.addProducer();
                 try {
 //                    Thread.sleep(3000);
@@ -273,16 +268,7 @@ public class HeapApp {
                     }
 
 
-                } catch (ArrayIndexOutOfBoundsException | InterruptedException e) {
-
-
-//                    dispatcher.removeConsumer(() -> {
-//                        if (dispatcher.producers.size() == 0) {
-//                            for (Thread consumer : dispatcher.consumers) {
-//                                consumer.interrupt();
-//                            }
-//                        }
-//                    });
+                } catch (InterruptedException e) {
                     System.out.printf("Producer %s was interrupted by someone calling stop request.", Thread.currentThread().getName());
                     System.out.println();
                 }
@@ -292,7 +278,6 @@ public class HeapApp {
         // Consumer with lambda function
         for (int i = 0; i < 3; i++) {
             new Thread(() -> {
-//                queue.dispatcher.addConsumer( () -> queue.dispatcher.consumers.add(Thread.currentThread()) );
                 dispatcher.addConsumer(Thread.currentThread());
                 try {
                     while (true) {
