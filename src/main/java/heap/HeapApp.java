@@ -1,8 +1,18 @@
 package heap;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HeapApp {
+
+    private static boolean stopRequested = false;
+    private AtomicBoolean mutexAtomic = new AtomicBoolean(true);
+    private Dispatcher dispatcher = new Dispatcher();
+    private HeapQueue queue = new HeapQueue(100);
+
+    public void setStopRequested(boolean stopRequested) {
+        HeapApp.stopRequested = stopRequested;
+    }
 
 
     public static void execHeapExamples() {
@@ -116,7 +126,7 @@ public class HeapApp {
 
     }
 
-    public static void execHeapExampleThread() throws InterruptedException {
+    public void execHeapExampleThread() throws InterruptedException {
 
 //        class Producer implements Runnable {
 //            Thread worker;
@@ -128,8 +138,8 @@ public class HeapApp {
 //                System.out.println("Create thread for " + name);
 //                worker.start();
 //
-//                queue.dispetcher.takeAction(() -> {
-//                    queue.dispetcher.producers.add(worker);
+//                queue.dispatcher.takeAction(() -> {
+//                    queue.dispatcher.producers.add(worker);
 //                });
 //            }
 //
@@ -164,8 +174,8 @@ public class HeapApp {
 ////                System.out.println("Create thread for " + name);
 //                worker.start();
 //
-//                queue.dispetcher.takeAction(() -> {
-//                    queue.dispetcher.consumers.add(worker);
+//                queue.dispatcher.takeAction(() -> {
+//                    queue.dispatcher.consumers.add(worker);
 //                });
 //            }
 //
@@ -188,7 +198,6 @@ public class HeapApp {
 //
 //        }
 
-        HeapQueue queue = new HeapQueue(100);
 
 //        for (int i = 0; i < 3; i++) {
 //            new Producer(queue, "Producer_" + i);
@@ -241,22 +250,40 @@ public class HeapApp {
 //        }
 //
         // Producer with lambda function
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 3; i++) {
             new Thread(() -> {
-                queue.dispetcher.addProducer( () -> queue.dispetcher.producers.add(Thread.currentThread()) );
+//                dispatcher.addProducer( () -> dispatcher.producers.add(Thread.currentThread()) );
+                dispatcher.addProducer();
                 try {
-//              Thread.sleep(3000);
+//                    Thread.sleep(3000);
+                    boolean isPutSuccess = false;
                     while (true) {
-                        if (!Thread.interrupted()) {
-                            if (queue.mutexAtomic.getAndSet(false)) {
-                                queue.put();
-                                queue.mutexAtomic.getAndSet(true);
+                        if (mutexAtomic.getAndSet(false)) {
+                            isPutSuccess = queue.put();
+                            mutexAtomic.getAndSet(true);
+
+                            if (!isPutSuccess) {
+                                System.out.printf("Producer %s was stopped by someone calling stop request.\n", Thread.currentThread().getName());
+                                dispatcher.removeProducer();
+                                break;
                             }
-                            Thread.sleep(1000);
                         }
+
+                        Thread.sleep(1000);
                     }
-                } catch (InterruptedException e) {
-                    System.out.printf("Producer %s was interrupted by someone calling Thread.interrupt()", Thread.currentThread().getName());
+
+
+                } catch (ArrayIndexOutOfBoundsException | InterruptedException e) {
+
+
+//                    dispatcher.removeConsumer(() -> {
+//                        if (dispatcher.producers.size() == 0) {
+//                            for (Thread consumer : dispatcher.consumers) {
+//                                consumer.interrupt();
+//                            }
+//                        }
+//                    });
+                    System.out.printf("Producer %s was interrupted by someone calling stop request.", Thread.currentThread().getName());
                     System.out.println();
                 }
             }).start();
@@ -265,21 +292,21 @@ public class HeapApp {
         // Consumer with lambda function
         for (int i = 0; i < 3; i++) {
             new Thread(() -> {
-                queue.dispetcher.addConsumer( () -> queue.dispetcher.consumers.add(Thread.currentThread()) );
+//                queue.dispatcher.addConsumer( () -> queue.dispatcher.consumers.add(Thread.currentThread()) );
+                dispatcher.addConsumer(Thread.currentThread());
                 try {
                     while (true) {
                         if (!Thread.interrupted()) {
-                            if (queue.mutexAtomic.getAndSet(false)) {
+                            if (mutexAtomic.getAndSet(false)) {
                                 queue.get();
-                                queue.mutexAtomic.getAndSet(true);
+                                mutexAtomic.getAndSet(true);
                             }
 
                             Thread.sleep(300);
                         }
                     }
                 } catch (InterruptedException e) {
-                    System.out.printf("Consumer %s was interrupted by someone calling Thread.interrupt() because no any Producers.", Thread.currentThread().getName());
-                    System.out.println();
+                    System.out.printf("Consumer %s was interrupted because there were no Producers left.\n", Thread.currentThread().getName());
                 }
             }).start();
         }
