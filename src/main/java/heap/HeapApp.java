@@ -246,6 +246,28 @@ public class HeapApp {
 //        }
 //
         // Producer with lambda function
+
+        // Consumer with lambda function
+        for (int i = 0; i < 3; i++) {
+            new Thread(() -> {
+                dispatcher.addConsumer(Thread.currentThread());
+                try {
+                    while (true) {
+                        if (!Thread.interrupted()) {
+                            if (mutexAtomic.getAndSet(false)) {
+                                queue.get();
+                                mutexAtomic.getAndSet(true);
+                            }
+
+                            Thread.sleep(300);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    System.out.printf("Consumer %s was interrupted because there were no Producers left.\n", Thread.currentThread().getName());
+                }
+            }).start();
+        }
+
         for (int i = 0; i < 3; i++) {
             new Thread(() -> {
                 dispatcher.addProducer();
@@ -273,28 +295,17 @@ public class HeapApp {
                     System.out.println();
                 }
             }).start();
+
         }
 
-        // Consumer with lambda function
-        for (int i = 0; i < 3; i++) {
-            new Thread(() -> {
-                dispatcher.addConsumer(Thread.currentThread());
-                try {
-                    while (true) {
-                        if (!Thread.interrupted()) {
-                            if (mutexAtomic.getAndSet(false)) {
-                                queue.get();
-                                mutexAtomic.getAndSet(true);
-                            }
+        Thread dispatcherThread = new Thread(() -> dispatcher.startDispatcher());
+        dispatcherThread.start();
 
-                            Thread.sleep(300);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    System.out.printf("Consumer %s was interrupted because there were no Producers left.\n", Thread.currentThread().getName());
-                }
-            }).start();
+        if (dispatcherThread.isAlive()) {
+            dispatcherThread.join();
         }
+
+        System.out.println("After join");
     }
 }
 

@@ -15,21 +15,36 @@ public class Dispatcher {
     public void removeProducer() {
         countProducer.decrementAndGet();
 
-        System.out.println("Notify Consumer!!!");
-        notifyConsumer();
+//        System.out.println("Notify Consumer!!!");
+//        notifyConsumer();
     }
 
     synchronized public void addConsumer(Thread consumer) {
         consumers.add(consumer);
     }
 
-    synchronized public void notifyConsumer() {
-        if (countProducer.get() == 0) {
-            for (Thread consumer : consumers) {
-                consumer.interrupt();
+    public void startDispatcher() {
+        while (true) {
+            if (countProducer.get() == 0) {
+                notifyConsumer();
+                break;
+            }
+        }
+    }
+
+    public void notifyConsumer() {
+        for (Thread consumer : consumers) {
+            consumer.interrupt();
+            if (consumer.isAlive()) {
+                try {
+                    consumer.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-        System.out.println("Number of running Producers: " + countProducer.get());
+        System.out.println("Graceful shutdown");
     }
 }
+
